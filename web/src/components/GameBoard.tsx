@@ -211,6 +211,13 @@ export function GameBoard({
           </p>
         </div>
       )}
+
+      <p className="attribution">
+        Karty:{' '}
+        <a href={`${import.meta.env.BASE_URL}cards/ATTRIBUTION.md`} target="_blank" rel="noreferrer">
+          Wikimedia Commons (CC BY-SA)
+        </a>
+      </p>
     </div>
   );
 }
