@@ -70,6 +70,7 @@ Setup → Phase1 (štych + lízání) → Phase2 (uzavřená hra) → EndGame
 ## Technologie
 
 - **Engine**: TypeScript, Jest
+- **Web**: React 18, Vite, GitHub Pages
 - **Backend**: Express + WebSocket
 - **Mobile**: Expo 51, React Native, react-native-svg
 
