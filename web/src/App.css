@@ -1,0 +1,321 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #1b5e20;
+  color: #fff;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+}
+
+.app {
+  min-height: 100vh;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 8px;
+}
+
+.menu-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.menu-btn {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px;
+  font-weight: 600;
+}
+
+.menu-btn.active {
+  background: #ff8f00;
+}
+
+.menu-btn-new {
+  background: #1565c0;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-weight: 600;
+}
+
+.switch-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  color: #c8e6c9;
+  font-size: 14px;
+}
+
+.switch-btn {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-weight: 700;
+}
+
+.switch-btn.active {
+  background: #ffd54f;
+  color: #1b5e20;
+}
+
+.board {
+  background: #2e7d32;
+  border-radius: 16px;
+  padding: 12px;
+}
+
+.board-header {
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 12px;
+  padding: 12px;
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.board-header h1 {
+  margin: 0;
+  font-size: 1.6rem;
+}
+
+.phase {
+  color: #c8e6c9;
+  margin: 6px 0 0;
+}
+
+.trump {
+  color: #ffeb3b;
+  margin: 4px 0 0;
+}
+
+.message {
+  color: #e8f5e9;
+  font-size: 0.85rem;
+  margin: 6px 0 0;
+}
+
+.opponent-area {
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.player-label {
+  margin: 0 0 8px;
+}
+
+.opponent-cards {
+  display: flex;
+  justify-content: center;
+}
+
+.table {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.talon-area {
+  width: 90px;
+  text-align: center;
+}
+
+.talon-label {
+  font-size: 0.75rem;
+  margin: 0 0 6px;
+}
+
+.trump-stack {
+  position: relative;
+  height: 110px;
+  width: 80px;
+  margin: 0 auto;
+}
+
+.talon-stack {
+  position: absolute;
+  top: 0;
+  left: 8px;
+}
+
+.trump-visible {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.trump-note {
+  color: #ffeb3b;
+  font-size: 0.65rem;
+  margin-top: 4px;
+}
+
+.trick-area {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  min-width: 180px;
+}
+
+.trick-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.trick-label {
+  font-size: 0.7rem;
+  margin-bottom: 4px;
+}
+
+.meld-announce {
+  color: #ffeb3b;
+  font-weight: 700;
+  margin-top: 6px;
+}
+
+.score-panel {
+  width: 130px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  padding: 8px;
+  font-size: 0.72rem;
+  line-height: 1.4;
+}
+
+.score-panel p {
+  margin: 0 0 4px;
+}
+
+.turn-text {
+  color: #ffeb3b;
+  font-weight: 700;
+}
+
+.swap-bar,
+.action-bar {
+  background: #1565c0;
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.action-bar {
+  background: transparent;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.swap-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.btn {
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.btn-primary {
+  background: #ff8f00;
+}
+
+.btn-meld {
+  background: #6a1b9a;
+}
+
+.btn-secondary {
+  background: #eceff1;
+  color: #37474f;
+}
+
+.hand-area {
+  margin-top: 8px;
+}
+
+.hand {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.hand-card {
+  background: none;
+  border: none;
+  padding: 0;
+  border-radius: 8px;
+  transition: transform 0.15s ease;
+}
+
+.hand-card.selected {
+  transform: translateY(-8px);
+}
+
+.hand-card:disabled {
+  cursor: not-allowed;
+}
+
+.game-over {
+  background: rgba(0, 0, 0, 0.45);
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 12px;
+  text-align: center;
+}
+
+.game-over h2 {
+  color: #ffeb3b;
+  margin: 0 0 12px;
+}
+
+.game-over p {
+  margin: 8px 0;
+  line-height: 1.5;
+}
+
+@media (max-width: 640px) {
+  .table {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .score-panel {
+    width: 100%;
+    max-width: 280px;
+  }
+}

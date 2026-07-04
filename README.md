@@ -1,12 +1,11 @@
 # Lízaný Mariáš – česká karetní hra
 
-Mobilní iOS hra (React Native / Expo) s kompletní herní logikou podle pravidel **Lízaného Mariáše** – 32 karet v německých barvách (Prší styl).
-
-## Struktura projektu
+Full-stack implementace tradiční české karetní hry – **Web**, iOS a Android.
 
 ```
 shared/          # Herní engine (TypeScript) – sdílená logika
 backend/         # REST + WebSocket API pro multiplayer
+web/             # React web app – GitHub Pages
 mobile/          # React Native (Expo) – iOS / Android
 docs/            # Pravidla a API dokumentace
 ```
@@ -28,6 +27,16 @@ npm run dev
 # http://localhost:5000
 ```
 
+### Web (GitHub Pages)
+```bash
+cd web
+npm install
+npm run dev      # lokální vývoj
+npm run build    # produkční build
+```
+
+**Live verze:** https://freshsole.github.io/Mari-iOS/
+
 ### Mobilní aplikace (iOS)
 ```bash
 cd mobile
@@ -37,7 +46,7 @@ npm run ios
 
 Pro Android: `npm run android`
 
-## Herní režimy v mobilní aplikaci
+## Herní režimy (web i mobil)
 
 - **Na přeskáčku** – dva hráči na jednom zařízení
 - **Proti AI** – hra proti počítači
