@@ -1,150 +1,69 @@
-# 🎴 Lízaný Mariáš - Czech Card Game
+# Lízaný Mariáš – česká karetní hra
 
-Full-stack implementation of the traditional Czech card game playable on **Web, iOS, and Android**.
+Mobilní iOS hra (React Native / Expo) s kompletní herní logikou podle pravidel **Lízaného Mariáše** – 32 karet v německých barvách (Prší styl).
 
-## 📋 Game Overview
-
-**Lízaný Mariáš** is a 2-player trick-taking card game using a 32-card German-suited deck (7-Ace in each suit).
-
-### Card Rankings (Highest to Lowest)
-- Ace (A) = 10 points
-- Ten (10) = 10 points  
-- King (K) = 0 points
-- Queen (Q) = 0 points
-- Jack (J) = 0 points
-- 9, 8, 7 = 0 points
-
-### Game Phases
-
-#### Phase 1: Draw Phase (Talón Active)
-- Players can play **ANY card** (no suit obligation)
-- **No obligation to overtrump**
-- After each trick: winner draws first, then loser
-- Each player maintains 8 cards in hand
-
-#### Phase 2: Close Game (Talón Exhausted)
-Strict rules activate:
-1. **MUST follow suit** if able
-2. Can underplay (no obligation to beat)
-3. **MUST play Trump** if no suited card
-4. Only discard if no suit or trump
-
-### Scoring System
-
-- **Aces & Tens won**: 10 points each
-- **Last trick bonus**: +10 points
-- **Melds (K+Q same suit)**: 
-  - Regular suit: 20 points
-  - Trump suit: 40 points
-- **Total available**: 90 points
-
-## 🏗️ Project Structure
+## Struktura projektu
 
 ```
-Mari-iOS/
-├── backend/                 # Node.js/Express server
-│   ├── src/
-│   │   ├── game/           # Game state machine
-│   │   ├── rules/          # Card validation & scoring
-│   │   ├── routes/         # REST API
-│   │   └── ws/             # WebSocket handlers
-│   └── package.json
-│
-├── web/                     # React web app
-│   ├── src/
-│   │   ├── components/     # React components
-│   │   ├── pages/          # Page components
-│   │   └── services/       # API services
-│   └── package.json
-│
-├── mobile/                  # React Native (iOS/Android)
-│   ├── src/
-│   │   ├── screens/
-│   │   └── components/
-│   └── package.json
-│
-└── docs/
-    ├── RULES.md            # Detailed rules
-    └── API.md              # API documentation
+shared/          # Herní engine (TypeScript) – sdílená logika
+backend/         # REST + WebSocket API pro multiplayer
+mobile/          # React Native (Expo) – iOS / Android
+docs/            # Pravidla a API dokumentace
 ```
 
-## 🚀 Quick Start
+## Rychlý start
 
-### Backend
+### Herní engine (testy)
+```bash
+cd shared
+npm install
+npm test
+```
+
+### Backend server
 ```bash
 cd backend
 npm install
 npm run dev
-# Server runs on http://localhost:5000
+# http://localhost:5000
 ```
 
-### Web
-```bash
-cd web
-npm install
-npm run dev
-# Opens http://localhost:5173
-```
-
-### Mobile
+### Mobilní aplikace (iOS)
 ```bash
 cd mobile
 npm install
-npm run ios    # For iOS
-npm run android # For Android
+npm run ios
 ```
 
-## ✨ Features
+Pro Android: `npm run android`
 
-- ✅ Full game state management with strict validation
-- ✅ Real-time multiplayer (WebSockets)
-- ✅ Phase 1 & Phase 2 rule enforcement
-- ✅ Meld detection and scoring
-- ✅ Czech language UI
-- ✅ Cross-platform (Web, iOS, Android)
-- ✅ Game history & statistics
-- ✅ Responsive design
+## Herní režimy v mobilní aplikaci
 
-## 🎮 How to Play
+- **Na přeskáčku** – dva hráči na jednom zařízení
+- **Proti AI** – hra proti počítači
 
-1. **Create Game** - Click "Nová hra" to start
-2. **Get Dealt** - Each player receives 8 cards
-3. **Play Tricks** - Lead card, then follow card
-4. **Phase 1** - Draw from deck after each trick
-5. **Phase 2** - Stricter rules apply (after deck empty)
-6. **Score** - Count tricks won + melds + last trick bonus
+## Implementované funkce
 
-## 🔧 Technical Stack
+- Přesná sekvence rozdání (4+4, trumf, 4+4, talón 15 karet)
+- Fáze 1: libovolná karta, lízání z talónu (vítěz → poražený)
+- Fáze 2: ctít barvu, trumf, discard + povolené podbití
+- Výměna sedmy trumfu s viditelným trumfem
+- Hlášky K+Q (20 / 40 bodů) při vedení štychu
+- Bodování: esa + desítky + bonus posledního štychu + hlášky = 90 bodů
+- České UI a německé barvy karet (Červené, Zelené, Žaludy, Kule)
 
-- **Backend**: Express.js + TypeScript + WebSockets
-- **Web Frontend**: React 18 + TypeScript + Vite
-- **Mobile**: React Native + TypeScript
-- **Database**: (Optional) PostgreSQL for game history
+## State machine
 
-## 📝 Game Rules Implementation
-
-### State Machine
 ```
-Setup → Phase1 (Loop) → Phase2 (Loop) → EndGame Scoring
+Setup → Phase1 (štych + lízání) → Phase2 (uzavřená hra) → EndGame
 ```
 
-### Validation Engine
-```typescript
-isValidMove(leadCard, responseCard, hand, trumpSuit, isPhase2)
-```
+## Technologie
 
-Ensures:
-- Phase 1: Any card valid
-- Phase 2: Suit → Trump → Discard hierarchy
+- **Engine**: TypeScript, Jest
+- **Backend**: Express + WebSocket
+- **Mobile**: Expo 51, React Native, react-native-svg
 
-## 👥 Contributing
-
-This is a complete game implementation. Feel free to add features like:
-- AI opponent
-- Game replay functionality
-- Statistics tracking
-- Tournaments mode
-
-## 📄 License
+## Licence
 
 MIT
