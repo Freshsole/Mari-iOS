@@ -1,22 +1,24 @@
 # Attribution – playing card images
 
-Card artwork: **Bohemian (Prague) pattern** single-headed Mariáš / Prší deck.
+Card artwork: **Bonaparte Bohemian pattern** (jednohlavé Mariášky), Plzeň, Czech Republic.
 
-## Sprite sheets
+Each card is a separate PNG in `web/public/cards/` (32 cards + back). The four suit sprite sheets in `sprites/` are assembled from the same scans for reference.
 
-Each suit is a 4×2 PNG sprite sheet in `sprites/` (A K Q J on top row, 10 9 8 7 on bottom). Individual cards are cropped in CSS via `background-position`.
+| Our suit | Czech name | WWPCM code |
+|----------|------------|------------|
+| acorns (Žaludy) | žaludy | `c` |
+| hearts (Červené) | srdce | `h` |
+| bells (Kule) | kule | `d` |
+| leaves (Zelené) | zelené | `s` |
 
-| Our suit | Czech name | Source |
-|----------|------------|--------|
-| acorns (Žaludy) | žaludy | Wikimedia Commons `*A from Prague.png` |
-| hearts (Červené) | srdce | Wikimedia Commons `*H from Prague.png` |
-| leaves (Zelené) | zelené | Wikimedia Commons `*L from Prague.png` |
-| bells (Kule) | kule | Wikimedia Commons `*B from Prague.png` |
+Source scans: [WWPCM00022 Bonaparte Bohemian pattern I](http://a.trionfi.eu/WWPCM/decks/d00022/d00022.htm) (World of Playing Cards / Trionfi archive).
 
-Category: [Jednohlave on Wikimedia Commons](https://commons.wikimedia.org/wiki/Category:Jednohlave)
+Card back: reverse scan from the same deck (`d00022r001.jpg`).
 
-License: verify per-file on Commons (typically public domain or CC BY-SA for modern scans).
+To use your own 4×2 sprite sheets instead, place `acorns.png`, `hearts.png`, `leaves.png`, `bells.png` in `sprites/` and run:
 
-Card back: custom SVG (project asset).
+```bash
+python3 scripts/crop-card-sprites.py
+```
 
-Previous individual SVG deck (`Playing card-german-vertical cut-*`) replaced by this Prague-pattern sprite layout.
+That regenerates the individual `{suit}-{rank}.png` files (grid: A K Q J / 10 9 8 7).

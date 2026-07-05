@@ -1,4 +1,4 @@
-import { getCardBackUrl, getCardSpriteStyle } from '../assets/cardSprites';
+import { getCardBackUrl, getCardImageForCard } from '../assets/cardImages';
 import { Card } from '@shared/types';
 
 interface PlayingCardProps {
@@ -20,43 +20,24 @@ export function PlayingCard({
   disabled = false,
   className = '',
 }: PlayingCardProps) {
-  const classNames = [
-    'playing-card',
-    faceDown ? 'playing-card--back' : 'playing-card--face',
-    selected ? 'playing-card--selected' : '',
-    disabled ? 'playing-card--disabled' : '',
-    className,
-  ]
-    .filter(Boolean)
-    .join(' ');
-
-  if (faceDown) {
-    return (
-      <img
-        src={getCardBackUrl()}
-        alt="Rub karty"
-        width={width}
-        height={height}
-        draggable={false}
-        className={classNames}
-      />
-    );
-  }
-
-  const sprite = getCardSpriteStyle(card.suit, card.rank);
+  const src = faceDown ? getCardBackUrl() : getCardImageForCard(card);
 
   return (
-    <span
-      role="img"
-      aria-label={`${card.rank} ${card.suit}`}
-      className={classNames}
-      style={{
-        width,
-        height,
-        backgroundImage: sprite.backgroundImage,
-        backgroundSize: sprite.backgroundSize,
-        backgroundPosition: sprite.backgroundPosition,
-      }}
+    <img
+      src={src}
+      alt={faceDown ? 'Rub karty' : `${card.rank}`}
+      width={width}
+      height={height}
+      draggable={false}
+      className={[
+        'playing-card',
+        faceDown ? 'playing-card--back' : 'playing-card--face',
+        selected ? 'playing-card--selected' : '',
+        disabled ? 'playing-card--disabled' : '',
+        className,
+      ]
+        .filter(Boolean)
+        .join(' ')}
     />
   );
 }
