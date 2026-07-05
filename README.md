@@ -37,6 +37,8 @@ npm run build    # produkční build
 
 **Live verze:** https://freshsole.github.io/Mari-iOS/
 
+> Aktualizace se nasazují automaticky po každém pushi do `main`.
+
 ### Mobilní aplikace (iOS)
 ```bash
 cd mobile
