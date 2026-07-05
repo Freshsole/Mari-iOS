@@ -1,14 +1,22 @@
 # Attribution – playing card images
 
-Card artwork: **German vertical-cut Prší deck** from [Wikimedia Commons](https://commons.wikimedia.org/) (series `Playing card-german-vertical cut-*`).
+Card artwork: **Bohemian (Prague) pattern** single-headed Mariáš / Prší deck.
 
-| Our suit | Wikimedia series | License |
-|----------|------------------|---------|
-| hearts (Červené) | `vertical cut-hart` | CC BY-SA 4.0 |
-| leaves (Zelené) | `vertical cut-blatt` | CC BY-SA 4.0 |
-| acorns (Žaludy) | `vertical cut-eichel` | CC BY-SA 4.0 |
-| bells (Kule) | `vertical cut-schellen` | CC BY-SA 4.0 |
+## Sprite sheets
+
+Each suit is a 4×2 PNG sprite sheet in `sprites/` (A K Q J on top row, 10 9 8 7 on bottom). Individual cards are cropped in CSS via `background-position`.
+
+| Our suit | Czech name | Source |
+|----------|------------|--------|
+| acorns (Žaludy) | žaludy | Wikimedia Commons `*A from Prague.png` |
+| hearts (Červené) | srdce | Wikimedia Commons `*H from Prague.png` |
+| leaves (Zelené) | zelené | Wikimedia Commons `*L from Prague.png` |
+| bells (Kule) | kule | Wikimedia Commons `*B from Prague.png` |
+
+Category: [Jednohlave on Wikimedia Commons](https://commons.wikimedia.org/wiki/Category:Jednohlave)
+
+License: verify per-file on Commons (typically public domain or CC BY-SA for modern scans).
 
 Card back: custom SVG (project asset).
 
-Previous deck (standard german-hart/blatt series) replaced in favour of this vertical-cut Prague-style design.
+Previous individual SVG deck (`Playing card-german-vertical cut-*`) replaced by this Prague-pattern sprite layout.

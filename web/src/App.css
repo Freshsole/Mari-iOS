@@ -513,10 +513,19 @@ button {
 
 .playing-card {
   display: block;
+  flex-shrink: 0;
   border-radius: 8px;
+  filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.35));
+}
+
+.playing-card--face {
+  background-color: #fff;
+  background-repeat: no-repeat;
+}
+
+.playing-card--back {
   object-fit: contain;
   background: #fff;
-  filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.35));
 }
 
 .playing-card--disabled {
