@@ -1,14 +1,13 @@
-/** Symetrické rozložení karet na stole – jemný vějíř bez chaosu */
-export function getHandLayout(index: number, total: number) {
-  const mid = (total - 1) / 2;
-  const offset = index - mid;
+/** Šířka karty a mezera – všechny karty viditelné v jedné řadě */
+export function getHandSizing(cardCount: number, viewportWidth: number) {
+  const sidePadding = 16;
+  const gap = cardCount > 6 ? 2 : 4;
+  const available = viewportWidth - sidePadding;
 
-  const stepPx = total <= 4 ? 18 : total <= 6 ? 14 : total <= 8 ? 11 : 9;
-  const angleDeg = total <= 4 ? 1.5 : total <= 6 ? 2 : 2.5;
+  let cardWidth = Math.floor((available - gap * Math.max(0, cardCount - 1)) / cardCount);
+  cardWidth = Math.min(56, Math.max(34, cardWidth));
 
-  return {
-    x: offset * stepPx,
-    rotate: offset * angleDeg,
-    zIndex: index + 1,
-  };
+  const cardHeight = Math.round(cardWidth * 1.42);
+
+  return { cardWidth, cardHeight, gap };
 }

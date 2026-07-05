@@ -8,7 +8,8 @@ import {
   buildScoreBreakdown,
 } from '@shared/index';
 import { getActivePlayer, getMeldOptions, getPlayableCards } from '@shared/gameEngine';
-import { getHandLayout } from '../utils/handLayout';
+import { getHandSizing } from '../utils/handLayout';
+import { useViewportWidth } from '../hooks/useViewportWidth';
 import { PlayingCard } from './PlayingCard';
 
 interface Props {
@@ -105,6 +106,8 @@ export function GameBoard({
   const hand = state.players[viewingPlayer].hand;
   const handCount = hand.length;
   const opponentCount = state.players[opponent].hand.length;
+  const viewportWidth = useViewportWidth();
+  const handSize = getHandSizing(handCount, Math.min(viewportWidth, 480));
 
   return (
     <div className="game-board">
@@ -234,29 +237,26 @@ export function GameBoard({
           )}
         </div>
 
-        <div className="player-hand" style={{ ['--hand-count' as string]: handCount }}>
-          {hand.map((card, i) => {
+        <div
+          className="player-hand"
+          style={{ gap: `${handSize.gap}px` }}
+        >
+          {hand.map((card) => {
             const canPlay = playableIds.has(card.id);
-            const layout = getHandLayout(i, handCount);
-            const cardW = handCount > 7 ? 50 : handCount > 5 ? 54 : 58;
-            const cardH = Math.round(cardW * 1.4);
             return (
               <button
                 key={card.id}
                 type="button"
                 className={`hand-slot${canPlay ? ' hand-slot--playable' : ''}${busy ? ' hand-slot--busy' : ''}`}
                 disabled={!canPlay || busy}
-                style={{
-                  left: '50%',
-                  ['--hx' as string]: `${layout.x}px`,
-                  ['--hr' as string]: `${layout.rotate}deg`,
-                  transform: `translateX(calc(-50% + ${layout.x}px)) rotate(${layout.rotate}deg)`,
-                  transformOrigin: 'bottom center',
-                  zIndex: layout.zIndex,
-                }}
                 onClick={() => handleCardTap(card)}
               >
-                <PlayingCard card={card} width={cardW} height={cardH} disabled={!canPlay} />
+                <PlayingCard
+                  card={card}
+                  width={handSize.cardWidth}
+                  height={handSize.cardHeight}
+                  disabled={!canPlay}
+                />
               </button>
             );
           })}
