@@ -8,6 +8,7 @@ import {
   buildScoreBreakdown,
 } from '@shared/index';
 import { getActivePlayer, getMeldOptions, getPlayableCards } from '@shared/gameEngine';
+import { getHandLayout } from '../utils/handLayout';
 import { PlayingCard } from './PlayingCard';
 
 interface Props {
@@ -131,49 +132,44 @@ export function GameBoard({
           </div>
         </div>
         <div className="opponent-hand">
-          {Array.from({ length: Math.min(opponentCount, 8) }).map((_, i) => (
-            <div
-              key={`opp-${i}`}
-              className="opponent-card-slot"
-              style={{
-                ['--i' as string]: i,
-                ['--total' as string]: Math.min(opponentCount, 8),
-              }}
-            >
-              <PlayingCard
-                card={{ id: `b-${i}`, suit: 'hearts', rank: '7' }}
-                faceDown
-                width={44}
-                height={62}
-              />
-            </div>
-          ))}
+          <div className="opponent-stack">
+            <div className="opponent-stack-layer opponent-stack-layer--3" />
+            <div className="opponent-stack-layer opponent-stack-layer--2" />
+            <PlayingCard
+              card={{ id: 'opp-stack', suit: 'hearts', rank: '7' }}
+              faceDown
+              width={48}
+              height={67}
+            />
+            <span className="opponent-stack-count">{opponentCount}</span>
+          </div>
         </div>
       </section>
 
       <section className="table-zone">
-        <div className="deck-zone">
-          <div className="talon-pile">
-            {state.talon.length > 0 && (
-              <>
-                <div className="talon-stack-card talon-stack-card--back">
-                  <PlayingCard card={state.talon[0]} faceDown width={56} height={78} />
+        <div className="table-felt">
+          <div className="deck-zone">
+            <div className="talon-pile">
+              {state.talon.length > 0 && (
+                <>
+                  <div className="talon-stack-card talon-stack-card--back">
+                    <PlayingCard card={state.talon[0]} faceDown width={54} height={76} />
+                  </div>
+                  <div className="talon-count">{state.talon.length}</div>
+                </>
+              )}
+              {state.trumpCard && (
+                <div className="trump-card-slot">
+                  <PlayingCard card={state.trumpCard} width={54} height={76} className="trump-card-visible" />
+                  <span className="trump-label">Trumf</span>
                 </div>
-                <div className="talon-count">{state.talon.length}</div>
-              </>
-            )}
-            {state.trumpCard && (
-              <div className="trump-card-slot">
-                <PlayingCard card={state.trumpCard} width={56} height={78} className="trump-card-visible" />
-                <span className="trump-label">Trumf</span>
-              </div>
-            )}
+              )}
+            </div>
           </div>
-        </div>
 
-        <div
-          className={`trick-zone${animEvent?.type === 'trick-won' ? ' trick-zone--collecting' : ''}`}
-        >
+          <div
+            className={`trick-zone${animEvent?.type === 'trick-won' ? ' trick-zone--collecting' : ''}`}
+          >
           {state.currentTrick.lead && (
             <div
               className={`trick-card-slot trick-card-slot--lead${
@@ -208,6 +204,7 @@ export function GameBoard({
               {active ? `${PLAYER_LABELS_CS[active]} hraje…` : state.lastActionMessage}
             </p>
           )}
+          </div>
         </div>
       </section>
 
@@ -237,9 +234,12 @@ export function GameBoard({
           )}
         </div>
 
-        <div className="player-hand">
+        <div className="player-hand" style={{ ['--hand-count' as string]: handCount }}>
           {hand.map((card, i) => {
             const canPlay = playableIds.has(card.id);
+            const layout = getHandLayout(i, handCount);
+            const cardW = handCount > 7 ? 50 : handCount > 5 ? 54 : 58;
+            const cardH = Math.round(cardW * 1.4);
             return (
               <button
                 key={card.id}
@@ -247,17 +247,16 @@ export function GameBoard({
                 className={`hand-slot${canPlay ? ' hand-slot--playable' : ''}${busy ? ' hand-slot--busy' : ''}`}
                 disabled={!canPlay || busy}
                 style={{
-                  ['--i' as string]: i,
-                  ['--total' as string]: handCount,
+                  left: '50%',
+                  ['--hx' as string]: `${layout.x}px`,
+                  ['--hr' as string]: `${layout.rotate}deg`,
+                  transform: `translateX(calc(-50% + ${layout.x}px)) rotate(${layout.rotate}deg)`,
+                  transformOrigin: 'bottom center',
+                  zIndex: layout.zIndex,
                 }}
                 onClick={() => handleCardTap(card)}
               >
-                <PlayingCard
-                  card={card}
-                  width={handCount > 6 ? 52 : 58}
-                  height={handCount > 6 ? 73 : 81}
-                  disabled={!canPlay}
-                />
+                <PlayingCard card={card} width={cardW} height={cardH} disabled={!canPlay} />
               </button>
             );
           })}
