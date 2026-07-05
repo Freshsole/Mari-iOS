@@ -6,8 +6,9 @@ import { createGameActions, GameMode } from './hooks/gameActions';
 
 export default function App() {
   const [state, setState] = useState<GameState>(() => createNewGame('player2'));
-  const [mode, setMode] = useState<GameMode>('hotseat');
+  const [mode, setMode] = useState<GameMode>('vsAi');
   const [viewingPlayer, setViewingPlayer] = useState<PlayerId>('player1');
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const actions = useMemo(() => createGameActions(setState, mode, 'player1'), [mode]);
 
@@ -20,47 +21,58 @@ export default function App() {
   }, [active, mode, state.phase, viewingPlayer]);
 
   return (
-    <div className="app">
-      <nav className="menu-bar">
-        <button
-          type="button"
-          className={`menu-btn${mode === 'hotseat' ? ' active' : ''}`}
-          onClick={() => setMode('hotseat')}
-        >
-          Na přeskáčku
+    <div className="app-shell">
+      <header className="app-header">
+        <button type="button" className="icon-btn" onClick={() => setMenuOpen((v) => !v)} aria-label="Menu">
+          ☰
         </button>
-        <button
-          type="button"
-          className={`menu-btn${mode === 'vsAi' ? ' active' : ''}`}
-          onClick={() => {
-            setMode('vsAi');
-            setViewingPlayer('player1');
-          }}
-        >
-          Proti AI
+        <h1>Lízaný Mariáš</h1>
+        <button type="button" className="icon-btn icon-btn--accent" onClick={actions.newGame} aria-label="Nová hra">
+          ↻
         </button>
-        <button type="button" className="menu-btn-new" onClick={actions.newGame}>
-          Nová hra
-        </button>
-      </nav>
+      </header>
 
-      {mode === 'hotseat' && (
-        <div className="switch-bar">
-          <span>Zobrazení:</span>
+      {menuOpen && (
+        <div className="menu-sheet">
           <button
             type="button"
-            className={`switch-btn${viewingPlayer === 'player1' ? ' active' : ''}`}
-            onClick={() => setViewingPlayer('player1')}
+            className={`menu-option${mode === 'vsAi' ? ' active' : ''}`}
+            onClick={() => {
+              setMode('vsAi');
+              setViewingPlayer('player1');
+              setMenuOpen(false);
+            }}
           >
-            Hráč 1
+            Proti AI
           </button>
           <button
             type="button"
-            className={`switch-btn${viewingPlayer === 'player2' ? ' active' : ''}`}
-            onClick={() => setViewingPlayer('player2')}
+            className={`menu-option${mode === 'hotseat' ? ' active' : ''}`}
+            onClick={() => {
+              setMode('hotseat');
+              setMenuOpen(false);
+            }}
           >
-            Hráč 2
+            Na přeskáčku
           </button>
+          {mode === 'hotseat' && (
+            <div className="menu-sub">
+              <button
+                type="button"
+                className={`menu-option${viewingPlayer === 'player1' ? ' active' : ''}`}
+                onClick={() => setViewingPlayer('player1')}
+              >
+                Hráč 1
+              </button>
+              <button
+                type="button"
+                className={`menu-option${viewingPlayer === 'player2' ? ' active' : ''}`}
+                onClick={() => setViewingPlayer('player2')}
+              >
+                Hráč 2
+              </button>
+            </div>
+          )}
         </div>
       )}
 

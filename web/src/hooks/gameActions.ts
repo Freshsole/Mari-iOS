@@ -66,7 +66,7 @@ export function createGameActions(
       const fresh = createNewGame('player2');
       setState(fresh);
       if (mode === 'vsAi') {
-        setTimeout(() => runAiTurn(fresh), 300);
+        setTimeout(() => runAiTurn(fresh), 600);
       }
     },
     playCard: (card: Card, declareMeld = false) => {
@@ -78,7 +78,7 @@ export function createGameActions(
             prev.trickStep === 'lead'
               ? playLead(prev, { player: active, card, declareMeld })
               : playFollow(prev, { player: active, card });
-          setTimeout(() => runAiTurn(next), 300);
+          setTimeout(() => runAiTurn(next), 650);
           return next;
         } catch {
           return prev;
@@ -91,7 +91,7 @@ export function createGameActions(
         if (!active) return prev;
         try {
           const next = swapTrumpSeven(prev, active);
-          setTimeout(() => runAiTurn(next), 300);
+          setTimeout(() => runAiTurn(next), 650);
           return next;
         } catch {
           return prev;
