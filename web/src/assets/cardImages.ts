@@ -4,44 +4,44 @@ const BASE = import.meta.env.BASE_URL;
 
 const CARD_FILES: Record<Suit, Record<Rank, string>> = {
   hearts: {
-    '7': 'hearts-7.svg',
-    '8': 'hearts-8.svg',
-    '9': 'hearts-9.svg',
-    '10': 'hearts-10.svg',
-    J: 'hearts-J.svg',
-    Q: 'hearts-Q.svg',
-    K: 'hearts-K.svg',
-    A: 'hearts-A.svg',
+    '7': 'hearts-7.png',
+    '8': 'hearts-8.png',
+    '9': 'hearts-9.png',
+    '10': 'hearts-10.png',
+    J: 'hearts-J.png',
+    Q: 'hearts-Q.png',
+    K: 'hearts-K.png',
+    A: 'hearts-A.png',
   },
   leaves: {
-    '7': 'leaves-7.svg',
-    '8': 'leaves-8.svg',
-    '9': 'leaves-9.svg',
-    '10': 'leaves-10.svg',
-    J: 'leaves-J.svg',
-    Q: 'leaves-Q.svg',
-    K: 'leaves-K.svg',
-    A: 'leaves-A.svg',
+    '7': 'leaves-7.png',
+    '8': 'leaves-8.png',
+    '9': 'leaves-9.png',
+    '10': 'leaves-10.png',
+    J: 'leaves-J.png',
+    Q: 'leaves-Q.png',
+    K: 'leaves-K.png',
+    A: 'leaves-A.png',
   },
   acorns: {
-    '7': 'acorns-7.svg',
-    '8': 'acorns-8.svg',
-    '9': 'acorns-9.svg',
-    '10': 'acorns-10.svg',
-    J: 'acorns-J.svg',
-    Q: 'acorns-Q.svg',
-    K: 'acorns-K.svg',
-    A: 'acorns-A.svg',
+    '7': 'acorns-7.png',
+    '8': 'acorns-8.png',
+    '9': 'acorns-9.png',
+    '10': 'acorns-10.png',
+    J: 'acorns-J.png',
+    Q: 'acorns-Q.png',
+    K: 'acorns-K.png',
+    A: 'acorns-A.png',
   },
   bells: {
-    '7': 'bells-7.svg',
-    '8': 'bells-8.svg',
-    '9': 'bells-9.svg',
-    '10': 'bells-10.svg',
-    J: 'bells-J.svg',
-    Q: 'bells-Q.svg',
-    K: 'bells-K.svg',
-    A: 'bells-A.svg',
+    '7': 'bells-7.png',
+    '8': 'bells-8.png',
+    '9': 'bells-9.png',
+    '10': 'bells-10.png',
+    J: 'bells-J.png',
+    Q: 'bells-Q.png',
+    K: 'bells-K.png',
+    A: 'bells-A.png',
   },
 };
 
@@ -50,7 +50,7 @@ export function getCardImageUrl(suit: Suit, rank: Rank): string {
 }
 
 export function getCardBackUrl(): string {
-  return `${BASE}cards/back.svg`;
+  return `${BASE}cards/back.png`;
 }
 
 export function getCardImageForCard(card: { suit: Suit; rank: Rank }): string {

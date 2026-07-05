@@ -1,14 +1,24 @@
 # Attribution – playing card images
 
-Card artwork: **German vertical-cut Prší deck** from [Wikimedia Commons](https://commons.wikimedia.org/) (series `Playing card-german-vertical cut-*`).
+Card artwork: **Bonaparte Bohemian pattern** (jednohlavé Mariášky), Plzeň, Czech Republic.
 
-| Our suit | Wikimedia series | License |
-|----------|------------------|---------|
-| hearts (Červené) | `vertical cut-hart` | CC BY-SA 4.0 |
-| leaves (Zelené) | `vertical cut-blatt` | CC BY-SA 4.0 |
-| acorns (Žaludy) | `vertical cut-eichel` | CC BY-SA 4.0 |
-| bells (Kule) | `vertical cut-schellen` | CC BY-SA 4.0 |
+Each card is a separate PNG in `web/public/cards/` (32 cards + back). The four suit sprite sheets in `sprites/` are assembled from the same scans for reference.
 
-Card back: custom SVG (project asset).
+| Our suit | Czech name | WWPCM code |
+|----------|------------|------------|
+| acorns (Žaludy) | žaludy | `c` |
+| hearts (Červené) | srdce | `h` |
+| bells (Kule) | kule | `d` |
+| leaves (Zelené) | zelené | `s` |
 
-Previous deck (standard german-hart/blatt series) replaced in favour of this vertical-cut Prague-style design.
+Source scans: [WWPCM00022 Bonaparte Bohemian pattern I](http://a.trionfi.eu/WWPCM/decks/d00022/d00022.htm) (World of Playing Cards / Trionfi archive).
+
+Card back: reverse scan from the same deck (`d00022r001.jpg`).
+
+To use your own 4×2 sprite sheets instead, place `acorns.png`, `hearts.png`, `leaves.png`, `bells.png` in `sprites/` and run:
+
+```bash
+python3 scripts/crop-card-sprites.py
+```
+
+That regenerates the individual `{suit}-{rank}.png` files (grid: A K Q J / 10 9 8 7).

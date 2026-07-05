@@ -31,6 +31,7 @@ export function PlayingCard({
       draggable={false}
       className={[
         'playing-card',
+        faceDown ? 'playing-card--back' : 'playing-card--face',
         selected ? 'playing-card--selected' : '',
         disabled ? 'playing-card--disabled' : '',
         className,
