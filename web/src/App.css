@@ -618,6 +618,17 @@ button {
   z-index: 10;
 }
 
+.hand-slot--meld-pending {
+  transform: translateY(-14px);
+  z-index: 12;
+}
+
+.hand-slot--meld-pending .playing-card {
+  outline: 2px solid #fde047;
+  outline-offset: 2px;
+  box-shadow: 0 0 12px rgba(253, 224, 71, 0.55);
+}
+
 .hand-slot--busy {
   pointer-events: none;
 }

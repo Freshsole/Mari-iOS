@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   Card,
   GameState,
@@ -6,6 +6,7 @@ import {
   PlayerId,
   SUIT_LABELS_CS,
   buildScoreBreakdown,
+  calculateScores,
 } from '@shared/index';
 import { getActivePlayer, getMeldOptions, getPlayableCards } from '@shared/gameEngine';
 import { getHandSizing } from '../utils/handLayout';
@@ -52,9 +53,11 @@ export function GameBoard({
   } = useTrickAnimations(state, viewingPlayer);
 
   const [busy, setBusy] = useState(false);
-  const lastTapRef = useRef<{ cardId: string; time: number } | null>(null);
+  const [meldPendingId, setMeldPendingId] = useState<string | null>(null);
+  const meldTimerRef = useRef<number | null>(null);
 
   const breakdown = state.phase === 'game_over' ? buildScoreBreakdown(state) : null;
+  const liveScores = calculateScores(state);
   const hand = state.players[viewingPlayer].hand;
   const handCount = hand.length;
   const opponentCount = state.players[opponent].hand.length;
@@ -64,22 +67,58 @@ export function GameBoard({
   const myWonCount = state.players[viewingPlayer].wonTricks.length;
   const oppWonCount = state.players[opponent].wonTricks.length;
 
+  useEffect(() => {
+    return () => {
+      if (meldTimerRef.current !== null) {
+        window.clearTimeout(meldTimerRef.current);
+      }
+    };
+  }, []);
+
+  const commitPlay = (card: Card, declareMeld = false) => {
+    setMeldPendingId(null);
+    setBusy(true);
+    window.setTimeout(() => {
+      onPlayCard(card, declareMeld);
+      setBusy(false);
+    }, 420);
+  };
+
   const handleCardTap = (card: Card) => {
     if (!playableIds.has(card.id) || busy || flying) return;
 
     const canMeld =
       (card.rank === 'K' || card.rank === 'Q') && meldSuits.includes(card.suit);
-    const now = Date.now();
-    const last = lastTapRef.current;
-    const isDoubleTap = last?.cardId === card.id && now - last.time < 450;
 
-    lastTapRef.current = { cardId: card.id, time: now };
-    setBusy(true);
+    if (canMeld) {
+      if (meldPendingId === card.id) {
+        if (meldTimerRef.current !== null) {
+          window.clearTimeout(meldTimerRef.current);
+          meldTimerRef.current = null;
+        }
+        commitPlay(card, true);
+        return;
+      }
 
-    setTimeout(() => {
-      onPlayCard(card, isDoubleTap && canMeld);
-      setBusy(false);
-    }, 420);
+      if (meldTimerRef.current !== null) {
+        window.clearTimeout(meldTimerRef.current);
+      }
+
+      setMeldPendingId(card.id);
+      meldTimerRef.current = window.setTimeout(() => {
+        meldTimerRef.current = null;
+        setMeldPendingId(null);
+        commitPlay(card, false);
+      }, 480);
+      return;
+    }
+
+    if (meldTimerRef.current !== null) {
+      window.clearTimeout(meldTimerRef.current);
+      meldTimerRef.current = null;
+    }
+    setMeldPendingId(null);
+    commitPlay(card, false);
   };
 
   const renderTrickCard = (
@@ -131,8 +170,8 @@ export function GameBoard({
             <span className="trump-badge">Trumf: {SUIT_LABELS_CS[state.trumpSuit]}</span>
           )}
         </div>
-        <div className="score-pill">
-          {state.players.player1.meldPoints}:{state.players.player2.meldPoints}
+        <div className="score-pill" title="Body ze štychů + hlášky">
+          {liveScores.player1}:{liveScores.player2}
         </div>
       </header>
 
@@ -250,13 +289,17 @@ export function GameBoard({
           </div>
           <p className="status-message">{state.lastActionMessage}</p>
           {meldSuits.length > 0 && isMyTurn && state.trickStep === 'lead' && (
-            <p className="meld-hint">Dvojtap na K/Q = hláška</p>
+            <p className="meld-hint">
+              {meldPendingId ? 'Ještě jednou = hláška' : 'Dvojtap K/Svršek = hláška'}
+            </p>
           )}
         </div>
 
         <div className="player-hand" style={{ gap: `${handSize.gap}px` }}>
           {hand.map((card) => {
             const canPlay = playableIds.has(card.id);
+            const canMeld =
+              (card.rank === 'K' || card.rank === 'Q') && meldSuits.includes(card.suit);
             return (
               <button
                 key={card.id}
@@ -264,6 +307,7 @@ export function GameBoard({
                 className={[
                   'hand-slot',
                   canPlay ? 'hand-slot--playable' : '',
+                  canMeld && meldPendingId === card.id ? 'hand-slot--meld-pending' : '',
                   busy || flying ? 'hand-slot--busy' : '',
                 ]
                   .filter(Boolean)

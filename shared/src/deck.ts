@@ -110,16 +110,19 @@ export function determineTrickWinner(
   const leadIsTrump = isTrump(lead, trumpSuit);
   const followIsTrump = isTrump(follow, trumpSuit);
 
+  // Same suit (including both trumps): higher rank wins.
   if (lead.suit === follow.suit) {
     return compareRanks(lead.rank, follow.rank) >= 0 ? 'lead' : 'follow';
   }
 
-  if (leadIsTrump && !followIsTrump) {
-    return 'lead';
-  }
+  // Trump beats any other suit, even a lower trump card.
   if (followIsTrump && !leadIsTrump) {
     return 'follow';
   }
+  if (leadIsTrump && !followIsTrump) {
+    return 'lead';
+  }
 
+  // Off-suit non-trump cannot win (phase 1: lead keeps the trick).
   return 'lead';
 }
