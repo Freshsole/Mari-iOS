@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { createNewGame, GameState, PlayerId } from '@shared/index';
 import { getActivePlayer } from '@shared/gameEngine';
 import { GameBoard } from './components/GameBoard';
-import { TrumpIndicator } from './components/TrumpIndicator';
 import { createGameActions, GameMode } from './hooks/gameActions';
 
 export default function App() {
@@ -28,7 +27,6 @@ export default function App() {
           <button type="button" className="icon-btn" onClick={() => setMenuOpen((v) => !v)} aria-label="Menu">
             ☰
           </button>
-          {state.trumpSuit && <TrumpIndicator suit={state.trumpSuit} />}
         </div>
         <h1>Lízaný Mariáš</h1>
         <button type="button" className="icon-btn icon-btn--accent" onClick={actions.newGame} aria-label="Nová hra">
