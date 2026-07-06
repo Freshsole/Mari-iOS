@@ -123,6 +123,8 @@ export function determineTrickWinner(
     return 'lead';
   }
 
-  // Off-suit non-trump cannot win (phase 1: lead keeps the trick).
+  // Different suits without trump: only a trump or a higher card of the led
+  // suit can win. Off-suit cards never take the trick — even the same rank
+  // (e.g. 7 zelená led, 7 žaludů follow, trumf srdce → vede první hráč).
   return 'lead';
 }
