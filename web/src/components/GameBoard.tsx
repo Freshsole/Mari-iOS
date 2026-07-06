@@ -166,9 +166,6 @@ export function GameBoard({
         <div className="phase-pill">{phaseShort(state)}</div>
         <div className="topbar-center">
           <span className="trick-counter">Štych {Math.min(state.trickNumber, 16)}/16</span>
-          {state.trumpSuit && (
-            <span className="trump-badge">Trumf: {SUIT_LABELS_CS[state.trumpSuit]}</span>
-          )}
         </div>
         <div className="score-pill" title="Body ze štychů + hlášky">
           {liveScores.player1}:{liveScores.player2}
