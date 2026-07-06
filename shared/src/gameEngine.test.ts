@@ -37,6 +37,39 @@ describe('Phase 1', () => {
       playFollow(afterLead, { player: follower, card: followCard }),
     ).not.toThrow();
   });
+
+  it('keeps trick with leader when equal rank is played off-suit without trump', () => {
+    resetCardCounter();
+    const lead7 = createCard('leaves', '7');
+    const follow7 = createCard('acorns', '7');
+
+    let state = createNewGame();
+    state = {
+      ...state,
+      trumpSuit: 'hearts',
+      trumpCard: createCard('hearts', 'A'),
+      phase: 'phase1_trick',
+      currentLeader: 'player1',
+      trickStep: 'lead',
+      trickNumber: 1,
+      players: {
+        player1: {
+          ...state.players.player1,
+          hand: [lead7, createCard('bells', '8')],
+        },
+        player2: {
+          ...state.players.player2,
+          hand: [follow7, createCard('bells', '9')],
+        },
+      },
+    };
+
+    state = playLead(state, { player: 'player1', card: lead7 });
+    state = playFollow(state, { player: 'player2', card: follow7 });
+
+    expect(state.completedTricks).toHaveLength(1);
+    expect(state.completedTricks[0].winner).toBe('player1');
+  });
 });
 
 describe('Phase 2 validation', () => {

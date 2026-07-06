@@ -29,6 +29,12 @@ describe('determineTrickWinner (phase 1 open play)', () => {
     expect(determineTrickWinner(lead, follow, trump)).toBe('lead');
   });
 
+  it('equal rank off-suit without trump keeps trick with leader (7 zelená vs 7 žaludů)', () => {
+    const lead = createCard('leaves', '7');
+    const follow = createCard('acorns', '7');
+    expect(determineTrickWinner(lead, follow, trump)).toBe('lead');
+  });
+
   it('higher trump beats lower trump', () => {
     const lead = createCard('hearts', '10');
     const follow = createCard('hearts', '7');
