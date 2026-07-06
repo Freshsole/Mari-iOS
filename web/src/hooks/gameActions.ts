@@ -11,8 +11,12 @@ import {
   playLead,
   swapTrumpSeven,
 } from '@shared/index';
+import { TRICK_ANIM_TOTAL_MS } from './useTrickAnimations';
 
 export type GameMode = 'hotseat' | 'vsAi';
+
+const PLAY_DELAY_MS = 520;
+const TRICK_DONE_DELAY_MS = TRICK_ANIM_TOTAL_MS + 120;
 
 function pickAiCard(state: GameState, player: PlayerId): { card: Card; declareMeld?: boolean } {
   const playable = getPlayableCards(state, player);
@@ -40,6 +44,11 @@ function pickAiCard(state: GameState, player: PlayerId): { card: Card; declareMe
   return { card: playable[Math.floor(Math.random() * playable.length)] };
 }
 
+function delayAfterMove(prev: GameState, next: GameState): number {
+  const trickCompleted = next.completedTricks.length > prev.completedTricks.length;
+  return trickCompleted ? TRICK_DONE_DELAY_MS : PLAY_DELAY_MS;
+}
+
 export function createGameActions(
   setState: Dispatch<SetStateAction<GameState>>,
   mode: GameMode,
@@ -47,18 +56,22 @@ export function createGameActions(
 ) {
   const runAiTurn = (state: GameState) => {
     if (mode !== 'vsAi') return;
-    let current = state;
-    let active = getActivePlayer(current);
-    while (active && active !== humanPlayer && current.phase !== 'game_over') {
-      const { card, declareMeld } = pickAiCard(current, active);
-      if (current.trickStep === 'lead') {
-        current = playLead(current, { player: active, card, declareMeld });
-      } else {
-        current = playFollow(current, { player: active, card });
-      }
-      active = getActivePlayer(current);
+    const active = getActivePlayer(state);
+    if (!active || active === humanPlayer || state.phase === 'game_over') return;
+
+    const { card, declareMeld } = pickAiCard(state, active);
+    const prev = state;
+    const next =
+      state.trickStep === 'lead'
+        ? playLead(state, { player: active, card, declareMeld })
+        : playFollow(state, { player: active, card });
+
+    setState(next);
+
+    const stillActive = getActivePlayer(next);
+    if (stillActive && stillActive !== humanPlayer && next.phase !== 'game_over') {
+      setTimeout(() => runAiTurn(next), delayAfterMove(prev, next));
     }
-    setState(current);
   };
 
   return {
@@ -66,7 +79,7 @@ export function createGameActions(
       const fresh = createNewGame('player2');
       setState(fresh);
       if (mode === 'vsAi') {
-        setTimeout(() => runAiTurn(fresh), 600);
+        setTimeout(() => runAiTurn(fresh), 700);
       }
     },
     playCard: (card: Card, declareMeld = false) => {
@@ -78,7 +91,7 @@ export function createGameActions(
             prev.trickStep === 'lead'
               ? playLead(prev, { player: active, card, declareMeld })
               : playFollow(prev, { player: active, card });
-          setTimeout(() => runAiTurn(next), 650);
+          setTimeout(() => runAiTurn(next), delayAfterMove(prev, next));
           return next;
         } catch {
           return prev;
@@ -91,7 +104,7 @@ export function createGameActions(
         if (!active) return prev;
         try {
           const next = swapTrumpSeven(prev, active);
-          setTimeout(() => runAiTurn(next), 650);
+          setTimeout(() => runAiTurn(next), PLAY_DELAY_MS);
           return next;
         } catch {
           return prev;

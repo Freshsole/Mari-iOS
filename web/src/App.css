@@ -271,7 +271,7 @@ button {
   position: relative;
   width: 100%;
   max-width: 360px;
-  min-height: 140px;
+  min-height: 150px;
   background: radial-gradient(ellipse at center, rgba(22, 101, 52, 0.35) 0%, rgba(15, 23, 42, 0.2) 70%);
   border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 20px;
@@ -279,6 +279,65 @@ button {
   align-items: center;
   justify-content: center;
   box-shadow: inset 0 2px 20px rgba(0, 0, 0, 0.25);
+}
+
+.won-pile {
+  position: absolute;
+  right: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  z-index: 2;
+  width: 44px;
+}
+
+.won-pile--opponent {
+  top: 10px;
+}
+
+.won-pile--player {
+  bottom: 10px;
+}
+
+.won-pile--receiving .won-pile-stack {
+  animation: pile-pulse 0.55s ease;
+}
+
+.won-pile-stack {
+  position: relative;
+  width: 36px;
+  height: 50px;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.35));
+}
+
+.won-pile-count {
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border-radius: 10px;
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  font-size: 0.62rem;
+  font-weight: 800;
+  display: grid;
+  place-items: center;
+}
+
+.won-pile-label {
+  font-size: 0.52rem;
+  color: #64748b;
+  font-weight: 600;
+}
+
+@keyframes pile-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.12);
+  }
 }
 
 .deck-zone {
@@ -358,14 +417,16 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 24px;
+  gap: 20px;
   min-height: 110px;
-  padding: 12px 70px 12px 90px;
+  padding: 12px 58px 12px 78px;
   width: 100%;
+  position: relative;
+  z-index: 3;
 }
 
-.trick-zone--collecting .trick-card-slot {
-  animation: trick-collect 0.65s ease-in forwards;
+.trick-zone--collecting {
+  gap: 8px;
 }
 
 .trick-card-slot {
@@ -377,15 +438,45 @@ button {
 }
 
 .trick-card-slot--lead {
-  transform: rotate(-3deg);
+  transform: rotate(-4deg);
 }
 
 .trick-card-slot--follow {
-  transform: rotate(3deg);
+  transform: rotate(4deg);
 }
 
-.trick-card-slot--fly-in {
-  animation: card-fly-in 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+.trick-card-slot--fly-from-player {
+  animation: card-fly-from-player 0.48s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.trick-card-slot--fly-from-opponent {
+  animation: card-fly-from-opponent 0.48s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.trick-card-slot--collecting.trick-card-slot--lead {
+  animation: none;
+}
+
+.trick-card-slot--collecting.trick-card-slot--follow {
+  animation: none;
+}
+
+.trick-card-slot--to-player-pile {
+  animation: trick-fly-to-player-pile 0.55s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  z-index: 20;
+}
+
+.trick-card-slot--to-opponent-pile {
+  animation: trick-fly-to-opponent-pile 0.55s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  z-index: 20;
+}
+
+.trick-card-slot--to-player-pile.trick-card-slot--follow {
+  animation-delay: 0.06s;
+}
+
+.trick-card-slot--to-opponent-pile.trick-card-slot--follow {
+  animation-delay: 0.06s;
 }
 
 .trick-player {
@@ -409,21 +500,47 @@ button {
   max-width: 180px;
 }
 
-@keyframes card-fly-in {
+@keyframes card-fly-from-player {
   from {
     opacity: 0;
-    transform: translateY(40px) scale(0.7);
+    transform: translateY(110px) scale(0.55) rotate(-6deg);
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0) scale(1) rotate(-4deg);
   }
 }
 
-@keyframes trick-collect {
-  to {
+@keyframes card-fly-from-opponent {
+  from {
     opacity: 0;
-    transform: translateY(-30px) scale(0.5);
+    transform: translateY(-90px) scale(0.55) rotate(6deg);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1) rotate(4deg);
+  }
+}
+
+@keyframes trick-fly-to-player-pile {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) rotate(-4deg) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(95px, 72px) rotate(6deg) scale(0.42);
+  }
+}
+
+@keyframes trick-fly-to-opponent-pile {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) rotate(4deg) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(95px, -72px) rotate(-6deg) scale(0.42);
   }
 }
 
@@ -629,7 +746,18 @@ button {
 
   .trick-zone {
     min-height: 96px;
-    padding: 10px 64px 10px 84px;
+    padding: 10px 52px 10px 72px;
+    gap: 14px;
+  }
+
+  .won-pile {
+    right: 6px;
+    width: 38px;
+  }
+
+  .won-pile-stack {
+    width: 32px;
+    height: 44px;
   }
 
   .talon-pile {

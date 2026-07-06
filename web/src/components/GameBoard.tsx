@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import {
   Card,
   GameState,
@@ -10,6 +10,7 @@ import {
 import { getActivePlayer, getMeldOptions, getPlayableCards } from '@shared/gameEngine';
 import { getHandSizing } from '../utils/handLayout';
 import { useViewportWidth } from '../hooks/useViewportWidth';
+import { useTrickAnimations } from '../hooks/useTrickAnimations';
 import { PlayingCard } from './PlayingCard';
 
 interface Props {
@@ -19,10 +20,6 @@ interface Props {
   onSwapSeven: () => void;
   onSkipSwap: () => void;
 }
-
-type AnimEvent =
-  | { type: 'play'; player: PlayerId; card: Card }
-  | { type: 'trick-won'; winner: PlayerId };
 
 function phaseShort(state: GameState): string {
   if (state.phase === 'phase1_trick' || state.phase === 'phase1_draw') return 'Fáze 1';
@@ -45,44 +42,30 @@ export function GameBoard({
   const meldSuits = isMyTurn && state.trickStep === 'lead' ? getMeldOptions(state, viewingPlayer) : [];
   const opponent: PlayerId = viewingPlayer === 'player1' ? 'player2' : 'player1';
 
-  const [animEvent, setAnimEvent] = useState<AnimEvent | null>(null);
+  const {
+    overlay,
+    flying,
+    displayTrick,
+    flyInClass,
+    collecting,
+    collectWinner,
+  } = useTrickAnimations(state, viewingPlayer);
+
   const [busy, setBusy] = useState(false);
   const lastTapRef = useRef<{ cardId: string; time: number } | null>(null);
-  const prevTrickCount = useRef(state.completedTricks.length);
-  const prevLeadId = useRef<string | undefined>(state.currentTrick.lead?.card.id);
-  const prevFollowId = useRef<string | undefined>(state.currentTrick.follow?.card.id);
 
-  useEffect(() => {
-    const lead = state.currentTrick.lead;
-    const follow = state.currentTrick.follow;
+  const breakdown = state.phase === 'game_over' ? buildScoreBreakdown(state) : null;
+  const hand = state.players[viewingPlayer].hand;
+  const handCount = hand.length;
+  const opponentCount = state.players[opponent].hand.length;
+  const viewportWidth = useViewportWidth();
+  const handSize = getHandSizing(handCount, Math.min(viewportWidth, 480));
 
-    if (lead && lead.card.id !== prevLeadId.current) {
-      setAnimEvent({ type: 'play', player: lead.player, card: lead.card });
-      const t = setTimeout(() => setAnimEvent(null), 500);
-      prevLeadId.current = lead.card.id;
-      return () => clearTimeout(t);
-    }
-
-    if (follow && follow.card.id !== prevFollowId.current) {
-      setAnimEvent({ type: 'play', player: follow.player, card: follow.card });
-      const t = setTimeout(() => setAnimEvent(null), 500);
-      prevFollowId.current = follow.card.id;
-      return () => clearTimeout(t);
-    }
-
-    if (state.completedTricks.length > prevTrickCount.current) {
-      const last = state.completedTricks[state.completedTricks.length - 1];
-      setAnimEvent({ type: 'trick-won', winner: last.winner });
-      prevTrickCount.current = state.completedTricks.length;
-      prevLeadId.current = undefined;
-      prevFollowId.current = undefined;
-      const t = setTimeout(() => setAnimEvent(null), 700);
-      return () => clearTimeout(t);
-    }
-  }, [state.currentTrick, state.completedTricks]);
+  const myWonCount = state.players[viewingPlayer].wonTricks.length;
+  const oppWonCount = state.players[opponent].wonTricks.length;
 
   const handleCardTap = (card: Card) => {
-    if (!playableIds.has(card.id) || busy) return;
+    if (!playableIds.has(card.id) || busy || flying) return;
 
     const canMeld =
       (card.rank === 'K' || card.rank === 'Q') && meldSuits.includes(card.suit);
@@ -93,21 +76,50 @@ export function GameBoard({
     lastTapRef.current = { cardId: card.id, time: now };
     setBusy(true);
 
-    setAnimEvent({ type: 'play', player: viewingPlayer, card });
-
     setTimeout(() => {
       onPlayCard(card, isDoubleTap && canMeld);
       setBusy(false);
-      setAnimEvent(null);
-    }, 380);
+    }, 420);
   };
 
-  const breakdown = state.phase === 'game_over' ? buildScoreBreakdown(state) : null;
-  const hand = state.players[viewingPlayer].hand;
-  const handCount = hand.length;
-  const opponentCount = state.players[opponent].hand.length;
-  const viewportWidth = useViewportWidth();
-  const handSize = getHandSizing(handCount, Math.min(viewportWidth, 480));
+  const renderTrickCard = (
+    play: NonNullable<typeof displayTrick.lead>,
+    role: 'lead' | 'follow',
+    meldPoints?: 20 | 40,
+  ) => {
+    const winnerSide =
+      collecting && collectWinner
+        ? collectWinner === viewingPlayer
+          ? 'player'
+          : 'opponent'
+        : null;
+
+    return (
+      <div
+        key={play.card.id}
+        className={[
+          'trick-card-slot',
+          `trick-card-slot--${role}`,
+          !collecting ? flyInClass(play.player, role) : '',
+          collecting ? 'trick-card-slot--collecting' : '',
+          collecting && winnerSide ? `trick-card-slot--to-${winnerSide}-pile` : '',
+        ]
+          .filter(Boolean)
+          .join(' ')}
+      >
+        <span className="trick-player">{PLAYER_LABELS_CS[play.player]}</span>
+        <PlayingCard card={play.card} width={62} height={87} />
+        {role === 'lead' && meldPoints && !collecting && (
+          <span className="meld-burst">{meldPoints === 40 ? '40!' : '20!'}</span>
+        )}
+      </div>
+    );
+  };
+
+  const overlayMeld =
+    overlay?.phase === 'hold' || overlay?.phase === 'collect'
+      ? overlay.trick.meld?.points
+      : state.currentTrick.pendingMeld?.points;
 
   return (
     <div className="game-board">
@@ -135,7 +147,7 @@ export function GameBoard({
           </div>
         </div>
         <div className="opponent-hand">
-          <div className="opponent-stack">
+          <div className="opponent-stack opponent-stack--source">
             <div className="opponent-stack-layer opponent-stack-layer--3" />
             <div className="opponent-stack-layer opponent-stack-layer--2" />
             <PlayingCard
@@ -151,6 +163,23 @@ export function GameBoard({
 
       <section className="table-zone">
         <div className="table-felt">
+          <div
+            className={`won-pile won-pile--opponent${collecting && collectWinner === opponent ? ' won-pile--receiving' : ''}`}
+          >
+            <div className="won-pile-stack">
+              {oppWonCount > 0 && (
+                <PlayingCard
+                  card={state.players[opponent].wonTricks[oppWonCount - 1].lead.card}
+                  faceDown
+                  width={36}
+                  height={50}
+                />
+              )}
+            </div>
+            <span className="won-pile-count">{oppWonCount}</span>
+            <span className="won-pile-label">Štychy</span>
+          </div>
+
           <div className="deck-zone">
             <div className="talon-pile">
               {state.talon.length > 0 && (
@@ -170,43 +199,31 @@ export function GameBoard({
             </div>
           </div>
 
+          <div className={`trick-zone${collecting ? ' trick-zone--collecting' : ''}`}>
+            {displayTrick.lead && renderTrickCard(displayTrick.lead, 'lead', overlayMeld)}
+            {displayTrick.follow && renderTrickCard(displayTrick.follow, 'follow')}
+            {!displayTrick.lead && !displayTrick.follow && (
+              <p className="table-hint">
+                {active ? `${PLAYER_LABELS_CS[active]} hraje…` : state.lastActionMessage}
+              </p>
+            )}
+          </div>
+
           <div
-            className={`trick-zone${animEvent?.type === 'trick-won' ? ' trick-zone--collecting' : ''}`}
+            className={`won-pile won-pile--player${collecting && collectWinner === viewingPlayer ? ' won-pile--receiving' : ''}`}
           >
-          {state.currentTrick.lead && (
-            <div
-              className={`trick-card-slot trick-card-slot--lead${
-                animEvent?.type === 'play' && animEvent.card.id === state.currentTrick.lead.card.id
-                  ? ' trick-card-slot--fly-in'
-                  : ''
-              }`}
-            >
-              <span className="trick-player">{PLAYER_LABELS_CS[state.currentTrick.lead.player]}</span>
-              <PlayingCard card={state.currentTrick.lead.card} width={62} height={87} />
-              {state.currentTrick.pendingMeld && (
-                <span className="meld-burst">
-                  {state.currentTrick.pendingMeld.points === 40 ? '40!' : '20!'}
-                </span>
+            <div className="won-pile-stack">
+              {myWonCount > 0 && (
+                <PlayingCard
+                  card={state.players[viewingPlayer].wonTricks[myWonCount - 1].lead.card}
+                  faceDown
+                  width={36}
+                  height={50}
+                />
               )}
             </div>
-          )}
-          {state.currentTrick.follow && (
-            <div
-              className={`trick-card-slot trick-card-slot--follow${
-                animEvent?.type === 'play' && animEvent.card.id === state.currentTrick.follow.card.id
-                  ? ' trick-card-slot--fly-in'
-                  : ''
-              }`}
-            >
-              <span className="trick-player">{PLAYER_LABELS_CS[state.currentTrick.follow.player]}</span>
-              <PlayingCard card={state.currentTrick.follow.card} width={62} height={87} />
-            </div>
-          )}
-          {!state.currentTrick.lead && !state.currentTrick.follow && (
-            <p className="table-hint">
-              {active ? `${PLAYER_LABELS_CS[active]} hraje…` : state.lastActionMessage}
-            </p>
-          )}
+            <span className="won-pile-count">{myWonCount}</span>
+            <span className="won-pile-label">Štychy</span>
           </div>
         </div>
       </section>
@@ -225,7 +242,7 @@ export function GameBoard({
         </div>
       )}
 
-      <section className="player-zone">
+      <section className="player-zone player-zone--source">
         <div className="status-bar">
           <div className="player-chip">
             <div className={`avatar ${isMyTurn ? 'avatar--active' : ''}`}>Vy</div>
@@ -237,18 +254,21 @@ export function GameBoard({
           )}
         </div>
 
-        <div
-          className="player-hand"
-          style={{ gap: `${handSize.gap}px` }}
-        >
+        <div className="player-hand" style={{ gap: `${handSize.gap}px` }}>
           {hand.map((card) => {
             const canPlay = playableIds.has(card.id);
             return (
               <button
                 key={card.id}
                 type="button"
-                className={`hand-slot${canPlay ? ' hand-slot--playable' : ''}${busy ? ' hand-slot--busy' : ''}`}
-                disabled={!canPlay || busy}
+                className={[
+                  'hand-slot',
+                  canPlay ? 'hand-slot--playable' : '',
+                  busy || flying ? 'hand-slot--busy' : '',
+                ]
+                  .filter(Boolean)
+                  .join(' ')}
+                disabled={!canPlay || busy || flying}
                 onClick={() => handleCardTap(card)}
               >
                 <PlayingCard
