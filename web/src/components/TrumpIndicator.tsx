@@ -7,8 +7,6 @@ interface TrumpIndicatorProps {
 }
 
 export function TrumpIndicator({ suit, size = 'sm' }: TrumpIndicatorProps) {
-  const iconSize = size === 'lg' ? 44 : 34;
-
   return (
     <div
       className={`trump-indicator${size === 'lg' ? ' trump-indicator--lg' : ''}`}
@@ -19,8 +17,6 @@ export function TrumpIndicator({ suit, size = 'sm' }: TrumpIndicatorProps) {
         src={getSuitIconUrl(suit)}
         alt=""
         className="trump-indicator__icon"
-        width={iconSize}
-        height={iconSize}
         draggable={false}
       />
     </div>

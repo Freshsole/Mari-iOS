@@ -23,21 +23,24 @@ export function PlayingCard({
   const src = faceDown ? getCardBackUrl() : getCardImageForCard(card);
 
   return (
-    <img
-      src={src}
-      alt={faceDown ? 'Rub karty' : `${card.rank}`}
-      width={width}
-      height={height}
-      draggable={false}
+    <div
       className={[
-        'playing-card',
-        faceDown ? 'playing-card--back' : 'playing-card--face',
-        selected ? 'playing-card--selected' : '',
-        disabled ? 'playing-card--disabled' : '',
+        'playing-card-frame',
+        faceDown ? 'playing-card-frame--back' : 'playing-card-frame--face',
+        selected ? 'playing-card-frame--selected' : '',
+        disabled ? 'playing-card-frame--disabled' : '',
         className,
       ]
         .filter(Boolean)
         .join(' ')}
-    />
+      style={{ width, height }}
+    >
+      <img
+        src={src}
+        alt={faceDown ? 'Rub karty' : `${card.rank}`}
+        className="playing-card"
+        draggable={false}
+      />
+    </div>
   );
 }
