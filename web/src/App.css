@@ -44,6 +44,33 @@ button {
   justify-content: space-between;
   padding: calc(8px + env(safe-area-inset-top)) 14px 8px;
   flex-shrink: 0;
+  gap: 8px;
+}
+
+.app-header__start {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 84px;
+}
+
+.trump-indicator {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: rgba(250, 204, 21, 0.12);
+  border: 1px solid rgba(250, 204, 21, 0.35);
+  box-shadow: 0 0 14px rgba(250, 204, 21, 0.2);
+}
+
+.trump-indicator__icon {
+  display: block;
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.45));
 }
 
 .app-header h1 {
@@ -649,7 +676,7 @@ button {
 .playing-card--face,
 .playing-card--back {
   object-fit: contain;
-  background: #fff;
+  background: transparent;
 }
 
 .playing-card--disabled {
