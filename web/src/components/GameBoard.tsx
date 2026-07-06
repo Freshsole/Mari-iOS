@@ -13,6 +13,7 @@ import { getHandSizing } from '../utils/handLayout';
 import { useViewportWidth } from '../hooks/useViewportWidth';
 import { useTrickAnimations } from '../hooks/useTrickAnimations';
 import { PlayingCard } from './PlayingCard';
+import { TrumpIndicator } from './TrumpIndicator';
 
 interface Props {
   state: GameState;
@@ -162,6 +163,12 @@ export function GameBoard({
 
   return (
     <div className="game-board">
+      {state.trumpSuit && (
+        <div className="trump-indicator-anchor">
+          <TrumpIndicator suit={state.trumpSuit} size="lg" />
+        </div>
+      )}
+
       <header className="game-topbar">
         <div className="phase-pill">{phaseShort(state)}</div>
         <div className="topbar-center">

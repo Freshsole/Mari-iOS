@@ -77,6 +77,10 @@ def extract_suit_icons() -> None:
         icon = icon.resize((56, 56), Image.Resampling.LANCZOS)
         out = SUITS / f"{suit}.png"
         icon.save(out, optimize=True)
+        # Also keep bundled copies for Vite imports.
+        bundled = Path(__file__).resolve().parents[1] / "web" / "src" / "assets" / "suits" / f"{suit}.png"
+        bundled.parent.mkdir(parents=True, exist_ok=True)
+        icon.save(bundled, optimize=True)
         print(f"Wrote {out}")
 
 

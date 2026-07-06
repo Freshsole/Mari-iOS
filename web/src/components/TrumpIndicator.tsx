@@ -3,17 +3,24 @@ import { getSuitIconUrl } from '../assets/suitIcons';
 
 interface TrumpIndicatorProps {
   suit: Suit;
+  size?: 'sm' | 'lg';
 }
 
-export function TrumpIndicator({ suit }: TrumpIndicatorProps) {
+export function TrumpIndicator({ suit, size = 'sm' }: TrumpIndicatorProps) {
+  const iconSize = size === 'lg' ? 44 : 34;
+
   return (
-    <div className="trump-indicator" title={`Trumf: ${SUIT_LABELS_CS[suit]}`}>
+    <div
+      className={`trump-indicator${size === 'lg' ? ' trump-indicator--lg' : ''}`}
+      title={`Trumf: ${SUIT_LABELS_CS[suit]}`}
+      aria-label={`Trumf: ${SUIT_LABELS_CS[suit]}`}
+    >
       <img
         src={getSuitIconUrl(suit)}
-        alt={`Trumf ${SUIT_LABELS_CS[suit]}`}
+        alt=""
         className="trump-indicator__icon"
-        width={36}
-        height={36}
+        width={iconSize}
+        height={iconSize}
         draggable={false}
       />
     </div>
